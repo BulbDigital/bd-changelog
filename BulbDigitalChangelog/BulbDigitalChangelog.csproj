@@ -44,6 +44,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
       <Private>True</Private>
@@ -130,21 +138,76 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AgenciesController.cs" />
+    <Compile Include="Controllers\AgencyReleasesController.cs" />
+    <Compile Include="Controllers\ChangelogEntriesController.cs" />
+    <Compile Include="Controllers\FrameworksController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ReleasesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201612150451492_Initial.cs" />
+    <Compile Include="Migrations\201612150451492_Initial.Designer.cs">
+      <DependentUpon>201612150451492_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612152047281_Second.cs" />
+    <Compile Include="Migrations\201612152047281_Second.Designer.cs">
+      <DependentUpon>201612152047281_Second.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612161357268_next.cs" />
+    <Compile Include="Migrations\201612161357268_next.Designer.cs">
+      <DependentUpon>201612161357268_next.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612161534564_3.cs" />
+    <Compile Include="Migrations\201612161534564_3.Designer.cs">
+      <DependentUpon>201612161534564_3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612161636013_4.cs" />
+    <Compile Include="Migrations\201612161636013_4.Designer.cs">
+      <DependentUpon>201612161636013_4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612161853066_5.cs" />
+    <Compile Include="Migrations\201612161853066_5.Designer.cs">
+      <DependentUpon>201612161853066_5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612162050100_7.cs" />
+    <Compile Include="Migrations\201612162050100_7.Designer.cs">
+      <DependentUpon>201612162050100_7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612162113234_9.cs" />
+    <Compile Include="Migrations\201612162113234_9.Designer.cs">
+      <DependentUpon>201612162113234_9.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612162123065_10.cs" />
+    <Compile Include="Migrations\201612162123065_10.Designer.cs">
+      <DependentUpon>201612162123065_10.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612162254583_11.cs" />
+    <Compile Include="Migrations\201612162254583_11.Designer.cs">
+      <DependentUpon>201612162254583_11.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Agency.cs" />
+    <Compile Include="Models\BulbDigitalChangelogContext.cs" />
+    <Compile Include="Models\ChangelogEntry.cs" />
+    <Compile Include="Models\AgencyRelease.cs" />
+    <Compile Include="Models\Framework.cs" />
+    <Compile Include="Models\Release.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\ChangelogEntries.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <None Include="Properties\PublishProfiles\BulbDigitalChangelog - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\BulbDigitalChangelog.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -153,6 +216,8 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\knockout-3.4.0.debug.js" />
+    <Content Include="Scripts\knockout-3.4.0.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
@@ -171,10 +236,13 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\Create.cshtml" />
+    <Content Include="Views\Home\Delete.cshtml" />
+    <Content Include="Views\Home\Details.cshtml" />
+    <Content Include="Views\Home\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -183,6 +251,38 @@
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201612150451492_Initial.resx">
+      <DependentUpon>201612150451492_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612152047281_Second.resx">
+      <DependentUpon>201612152047281_Second.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612161357268_next.resx">
+      <DependentUpon>201612161357268_next.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612161534564_3.resx">
+      <DependentUpon>201612161534564_3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612161636013_4.resx">
+      <DependentUpon>201612161636013_4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612161853066_5.resx">
+      <DependentUpon>201612161853066_5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612162050100_7.resx">
+      <DependentUpon>201612162050100_7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612162113234_9.resx">
+      <DependentUpon>201612162113234_9.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612162123065_10.resx">
+      <DependentUpon>201612162123065_10.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612162254583_11.resx">
+      <DependentUpon>201612162254583_11.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

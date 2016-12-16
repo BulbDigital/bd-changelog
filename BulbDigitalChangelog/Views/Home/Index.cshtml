@@ -1,31 +1,72 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@model IEnumerable<BulbDigitalChangelog.Models.ChangelogEntry>
+
+@{
+    ViewBag.Title = "Home";
 }
+@section Scripts {
+    @Scripts.Render("~/bundles/knockout")
+    <script type="text/javascript">
+         function ChangelogEntryViewModel() {
+             var self = this;
+             self.changelogEntries = ko.observableArray([]);
+             self.addChangelogEntry = function () {
+                 var newChangelogEntry = $("#addChangelogEntry").serialize();
+                 newChangelogEntry.HasBeenProvisioned = false;
+                 newChangelogEntry.DateLogged = Date.now();
+                 var slackPost = { text: "MVAA Core" };
+                 $.post("/api/AgencyReleases/Provision/",
+                     slackPost,
+                     function (value) {
+                         console.log("woohoo");
+                     },
+                     "json");
+             }
+             self.removeChangelogEntry = function (changelogEntry) {
+                 $.ajax({
+                     type: "DELETE",
+                     url: changelogEntry.Self,
+                     success: function () {
+                         self.changelogEntries.remove(changelogEntry);
+                     }
+                 });
+             }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>
+             $.getJSON("/api/ChangelogEntries", function (data) {
+                 self.changelogEntries(data);
+             });
+         }
+         ko.applyBindings(new ChangelogEntryViewModel());
+    </script>
+}
+<ul id="changelogEntries" data-bind="foreach: changelogEntries">
+    <li class="ui-widget-content ui-corner-all">
+        <h1 data-bind="text: Description" class="ui-widget-header"></h1>
+        <div><span data-bind="text: $data.ProjectKey || 'ProjectKey?'"></span></div>
+        @*<div>
+            <span data-bind="text: $data.City || 'City?'"></span>,
+            <span data-bind="text: $data.State || 'State?'"></span>
+            <span data-bind="text: $data.Zip || 'Zip?'"></span>
+        </div>
+        <div data-bind="if: $data.Email"><a data-bind="attr: { href: 'mailto:' + Email }, text: Email"></a></div>
+        <div data-bind="ifnot: $data.Email"><span>Email?</span></div>
+        <div data-bind="if: $data.Twitter"><a data-bind="attr: { href: 'http://twitter.com/' + Twitter }, text: '@@' + Twitter"></a></div>
+        <div data-bind="ifnot: $data.Twitter"><span>Twitter?</span></div>*@
+        <p><a data-bind="attr: { href: Self }, click: $root.removeChangelogEntry" class="removeChangelogEntry ui-state-default ui-corner-all">Remove</a></p>
+    </li>
+</ul>
+<form id="addChangelogEntry" data-bind="submit: addChangelogEntry">
+    <fieldset>
+        <legend>Add New ChangelogEntry</legend>
+        <ol>
+            <li>
+                <label for="Description">Description</label>
+                <input type="text" name="Description" />
+            </li>
+            <li>
+                <label for="ProjectKey">ProjectKey</label>
+                <input type="text" name="ProjectKey">
+            </li>
+        </ol>
+        <input type="submit" value="Add" />
+    </fieldset>
+</form>
