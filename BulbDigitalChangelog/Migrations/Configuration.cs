@@ -37,6 +37,9 @@ namespace BulbDigitalChangelog.Migrations
                 new Agency() { Name = "DHHS" }
                 );
 
+            //context.AgencyReleases.AddOrUpdate(a => a.AgencyReleaseKey,
+            //    new AgencyRelease() { AgencyKey = 1, DateProvisioned = DateTime.Now, Provisioner = "test", ReleaseKey = 10 },
+            //    new AgencyRelease() { AgencyKey = 1, DateProvisioned = DateTime.Now, Provisioner = "test2", ReleaseKey = 11 });
             //context.ChangelogEntries.AddOrUpdate(c => c.ChangelogEntryKey,
             //    new ChangelogEntry() { Description = "Changelog 1", FrameworkKey = 1, ReleaseKey = 10, DateLogged = DateTime.Now });
 

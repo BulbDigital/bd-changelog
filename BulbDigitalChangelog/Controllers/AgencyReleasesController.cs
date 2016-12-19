@@ -27,6 +27,59 @@ namespace BulbDigitalChangelog.Controllers
             return db.AgencyReleases.Include("Agency").Include("Release.Framework");
         }
 
+        [Route("api/AgencyReleases/Slack")]
+        public textResponse GetAgencyReleasesForSlack()
+        {
+            string result = "";
+            //textResponse res = new textResponse();
+            var releaseGroups = db.AgencyReleases.Include("Agency").Include("Release.Framework")
+                .GroupBy(r => r.AgencyKey, 
+                r => new {
+                    Agency = r.Agency,
+                    Release = new {
+                        Version = r.Release.Version,
+                        FrameworkName = r.Release.Framework.Name,
+                        FrameworkKey = r.Release.FrameworkKey
+                    }
+                }, (key, r) =>
+            new
+            {
+                AgencyKey = key,
+                AgencyName = r.Select(t => t.Agency.Name).FirstOrDefault(),
+                AgencyRank = r.Select(t => t.Agency.Rank).FirstOrDefault(),
+                MostRecentAgencyReleases = r
+                .GroupBy(s => s.Release.FrameworkKey,
+                 (k, s) =>
+            new
+            {
+                RecentRelease = s
+                .OrderByDescending(ar => ar.Release.Version).Select(b => b.Release).FirstOrDefault()
+            })
+            }).OrderBy(a => a.AgencyRank);
+
+            //List<int> currentReleaseKeys = releaseGroups.Select(rg => rg.CurrentReleaseKey).ToList();
+            //var groups = db.ChangelogEntries.Include("Framework").Where(c => currentReleaseKeys.Contains(c.ReleaseKey)).GroupBy(c => c.Framework.Name, c => c, (key, c) => new { FrameworkName = key, Changelogs = c.ToList() }).ToList();
+
+            foreach (var group in releaseGroups)
+            {
+               // res.attachments = new 
+                result += "*----- " + group.AgencyName + " -----*\n";
+                foreach (var recentRelease in group.MostRecentAgencyReleases)
+                {
+                    result += recentRelease.RecentRelease.FrameworkName + " Version: " + recentRelease.RecentRelease.Version + "\n";
+                }
+                result += "\n";
+            }
+
+            if (result == "")
+            {
+                result = "No Status Yet";
+            }
+
+            textResponse res = new textResponse() { text = result };
+            return res;
+        }
+
         // GET: api/AgencyReleases/5
         [ResponseType(typeof(AgencyRelease))]
         public IHttpActionResult GetAgencyRelease(int id)

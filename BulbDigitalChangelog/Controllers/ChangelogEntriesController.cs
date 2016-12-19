@@ -15,6 +15,7 @@ namespace BulbDigitalChangelog.Controllers
     public class textResponse
     {
         public string text { get; set; }
+        public Object attachments { get; set; }
     }
 
     public class SlackPost
@@ -145,9 +146,27 @@ namespace BulbDigitalChangelog.Controllers
                         };
                         db.ChangelogEntries.Add(newEntry);
                         db.SaveChanges();
+                        returnString = "*Added to " + framework + " changelog*: " + slackPost.text;
+                    }
+                    else
+                    {
+                        Release initialRelease = new Release() { FrameworkKey = fw.FrameworkKey, HasBeenPulled = false, Version = 1 };
+                        db.Releases.Add(initialRelease);
+                        db.SaveChanges();
+
+                        ChangelogEntry newEntry = new ChangelogEntry()
+                        {
+                            CreatedByUser = slackPost.user_id,
+                            DateLogged = DateTime.Now,
+                            Description = slackPost.text,
+                            FrameworkKey = fw.FrameworkKey,
+                            ReleaseKey = initialRelease.ReleaseKey
+                        };
+                        db.ChangelogEntries.Add(newEntry);
+                        db.SaveChanges();
+                        returnString = "*Added to " + framework + " changelog*: " + slackPost.text;
                     }
                 }
-                returnString = "*Added to " + framework + " changelog*: " + slackPost.text;
             }
             else
             {

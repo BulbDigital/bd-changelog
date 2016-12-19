@@ -13,7 +13,7 @@ namespace BulbDigitalChangelog.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201612162254583_11"; }
+            get { return "201612191643229_11"; }
         }
         
         string IMigrationMetadata.Source
