@@ -15,8 +15,34 @@ namespace BulbDigitalChangelog.Controllers
     public class textResponse
     {
         public string text { get; set; }
-        public Object attachments { get; set; }
+        public List<Attachment> attachments { get; set; }
     }
+
+    public class Attachment
+    {
+        //Required plain-text summary of the attachment
+        public string fallback { get; set; }
+        //#36a64f
+        public string color { get; set; }
+        //Optional text that appears above the attachment block
+        public string pretext { get; set; }
+            //Slack API Documentation
+            public string title { get; set; }
+
+            //https://api.slack.com/
+            public string title_link { get; set; }
+            //Optional text that appears within the attachment
+            public string text { get; set; }
+            public List<Field> fields { get; set; }
+            public string footer { get; set; }
+    }
+
+public class Field
+{
+    public string title;
+    public string value;
+    public bool @short;
+}
 
     public class SlackPost
     {
@@ -49,22 +75,33 @@ namespace BulbDigitalChangelog.Controllers
             List<int> currentReleaseKeys = releaseGroups.Select(rg => rg.CurrentReleaseKey).ToList();
             var groups = db.ChangelogEntries.Include("Framework").Where(c => currentReleaseKeys.Contains(c.ReleaseKey)).GroupBy(c => c.Framework.Name, c=> c, (key, c) => new { FrameworkName = key, Changelogs = c.ToList()}).ToList();
 
+            textResponse res = new textResponse();
+            res.attachments = new List<Attachment>();
             foreach (var group in groups)
             {
+                Attachment newAttachment = new Attachment() { fields = new List<Field>() };
+
+                Field newField = new Field() { title = group.FrameworkName, value = "" };
                 result += "*" + group.FrameworkName + "*\n";
                 foreach(ChangelogEntry changelog in group.Changelogs)
                 {
+                    newField.value += changelog.Description + "\n";
                     result += changelog.Description + "\n";
                 }
-                result += "\n";
-            }
+
+            newAttachment.fields.Add(newField);
+
+            res.attachments.Add(newAttachment);
+            result += "\n";
+        }
 
             if(result == "")
             {
-                result = "No Pending Updates";
+                res.text = "No Pending Updates";
+                res.attachments = null;
             }
 
-            textResponse res = new textResponse() { text = result };
+            //textResponse res = new textResponse() { text = result };
             return res;
         }
 

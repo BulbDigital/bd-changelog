@@ -33,8 +33,12 @@ namespace BulbDigitalChangelog.Migrations
             //    );
 
             context.Agencies.AddOrUpdate(a => a.Name,
-                new Agency() { Name = "MVAA" },
-                new Agency() { Name = "DHHS" }
+                new Agency() { Name = "INSIDE", Rank = 1 },
+                new Agency() { Name = "MVAA", Rank = 2 },
+                new Agency() { Name = "DHHS", Rank = 3 },
+                new Agency() { Name = "MSHDA", Rank = 4 },
+                new Agency() { Name = "MDOT", Rank = 5 },
+                new Agency() { Name = "MEDC", Rank = 6 }
                 );
 
             //context.AgencyReleases.AddOrUpdate(a => a.AgencyReleaseKey,

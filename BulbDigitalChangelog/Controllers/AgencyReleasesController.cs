@@ -31,7 +31,7 @@ namespace BulbDigitalChangelog.Controllers
         public textResponse GetAgencyReleasesForSlack()
         {
             string result = "";
-            //textResponse res = new textResponse();
+            textResponse res = new textResponse();
             var releaseGroups = db.AgencyReleases.Include("Agency").Include("Release.Framework")
                 .GroupBy(r => r.AgencyKey, 
                 r => new {
@@ -60,23 +60,32 @@ namespace BulbDigitalChangelog.Controllers
             //List<int> currentReleaseKeys = releaseGroups.Select(rg => rg.CurrentReleaseKey).ToList();
             //var groups = db.ChangelogEntries.Include("Framework").Where(c => currentReleaseKeys.Contains(c.ReleaseKey)).GroupBy(c => c.Framework.Name, c => c, (key, c) => new { FrameworkName = key, Changelogs = c.ToList() }).ToList();
 
+            res.attachments = new List<Attachment>();
             foreach (var group in releaseGroups)
             {
-               // res.attachments = new 
+                Attachment newAttachment = new Attachment() { fields = new List<Field>()};
+
+                Field newField = new Field() { title = group.AgencyName, value = "" };
                 result += "*----- " + group.AgencyName + " -----*\n";
-                foreach (var recentRelease in group.MostRecentAgencyReleases)
-                {
+                foreach (var recentRelease in group.MostRecentAgencyReleases) { 
+                    newField.value += recentRelease.RecentRelease.FrameworkName + " Version: " + recentRelease.RecentRelease.Version + "\n";
+                    //newAttachment.fields.Add(new Field() { title = recentRelease.RecentRelease.FrameworkName, value = recentRelease.RecentRelease.Version.ToString(), @short = true });
                     result += recentRelease.RecentRelease.FrameworkName + " Version: " + recentRelease.RecentRelease.Version + "\n";
                 }
+
+            newAttachment.fields.Add(newField);
+
+            res.attachments.Add(newAttachment);
                 result += "\n";
             }
 
             if (result == "")
             {
-                result = "No Status Yet";
+                res.text = "No Status Yet";
             }
 
-            textResponse res = new textResponse() { text = result };
+            //res.text = result;
+            //res = new textResponse() { text = result };
             return res;
         }
 
