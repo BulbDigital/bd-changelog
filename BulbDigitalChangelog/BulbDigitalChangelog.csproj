@@ -191,6 +191,10 @@
     <Compile Include="Migrations\201612191903131_13.Designer.cs">
       <DependentUpon>201612191903131_13.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201701271631486_addedurl.cs" />
+    <Compile Include="Migrations\201701271631486_addedurl.Designer.cs">
+      <DependentUpon>201701271631486_addedurl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Agency.cs" />
     <Compile Include="Models\BulbDigitalChangelogContext.cs" />
@@ -198,6 +202,7 @@
     <Compile Include="Models\AgencyRelease.cs" />
     <Compile Include="Models\Framework.cs" />
     <Compile Include="Models\Release.cs" />
+    <Compile Include="Models\ServiceModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -247,6 +252,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\ServiceModels\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -289,6 +295,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201612191903131_13.resx">
       <DependentUpon>201612191903131_13.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201701271631486_addedurl.resx">
+      <DependentUpon>201701271631486_addedurl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

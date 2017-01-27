@@ -37,7 +37,7 @@ namespace BulbDigitalChangelog.Controllers
 
         [HttpPost]
         [Route("api/Releases/Build", Name = "BuildRelease")]
-        [ResponseType(typeof(string))]
+        [ResponseType(typeof(BuildResponse))]
         public IHttpActionResult BuildRelease(SlackPost slackPost)
         {
             if (!ModelState.IsValid)
@@ -46,6 +46,7 @@ namespace BulbDigitalChangelog.Controllers
             }
 
             string returnString = "";
+            BuildResponse buildResponse = new BuildResponse();
 
             if (slackPost.text != null)
             {
@@ -58,7 +59,16 @@ namespace BulbDigitalChangelog.Controllers
                     fw.Version = newRelease.Version;
                     db.Releases.Add(newRelease);
                     db.SaveChanges();
-                    returnString = "*Built release for " + fw.Name + "*";
+
+                    buildResponse.Framework = fw.Name;
+                    buildResponse.BuildDate = DateTime.Now;
+                    buildResponse.Version = release.Version.ToString();
+
+                    List<ChangelogEntry> changesInRelease = db.ChangelogEntries.Where(ce => ce.ReleaseKey == release.ReleaseKey).ToList();
+
+                    buildResponse.Changelogs = changesInRelease.Select(c => new ServiceChangelog() { DateLogged = c.DateLogged, ChangeNote = c.Description, Username = c.CreatedByUser }).ToList();
+
+                    //returnString = "*Built release for " + fw.Name + "*";
                 }
                 else
                 {
@@ -70,9 +80,9 @@ namespace BulbDigitalChangelog.Controllers
                 returnString = "You have to enter a framework to build a release for";
             }
 
-            var res = new { text = returnString };
+            //var res = new { text = returnString };
 
-            return CreatedAtRoute("BuildRelease", new { id = 1 }, res);
+            return CreatedAtRoute("BuildRelease", new { id = 1 }, buildResponse);
         }
 
         // PUT: api/Releases/5
@@ -153,6 +163,114 @@ namespace BulbDigitalChangelog.Controllers
         private bool ReleaseExists(int id)
         {
             return db.Releases.Count(e => e.ReleaseKey == id) > 0;
+        }
+
+        //[HttpPost]
+        //[Route("api/Releases/Agency", Name = "GetAgencyReleaseDetails")]
+        //[ResponseType(typeof(string))]
+        //public textResponse GetAgencyRelease(SlackPost sp)
+        //{
+        //    textResponse res = new textResponse();
+        //    res.attachments = new List<Attachment>();
+
+        //    int version = -1;
+        //    if (Int32.TryParse(sp.text, out version))
+        //    {
+        //        Framework fw = db.Frameworks.Where(f => f.Name.ToLower() == "agency").FirstOrDefault();
+        //        if (fw != null)
+        //        {
+        //            Release release = db.Releases.Where(r => r.FrameworkKey == fw.FrameworkKey && r.Version == version).FirstOrDefault();
+
+        //            res.text = "Agency release version " + version + " contains:";
+
+        //            List<ChangelogEntry> changesInRelease = db.ChangelogEntries.Where(ce => ce.ReleaseKey == release.ReleaseKey).ToList();
+
+        //            foreach (ChangelogEntry entry in changesInRelease)
+        //            {
+        //                Attachment newAttachment = new Attachment() { fields = new List<Field>() };
+        //                Field newField = new Field() { title = "", value = entry.Description };
+        //                newAttachment.fields.Add(newField);
+        //                res.attachments.Add(newAttachment);
+        //            }
+
+        //            if (res.attachments.Count == 0)
+        //            {
+        //                Attachment newAttachment = new Attachment() { fields = new List<Field>() };
+        //                Field newField = new Field() { title = "", value = "No Changes Logged" };
+        //                newAttachment.fields.Add(newField);
+        //                res.attachments.Add(newAttachment);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            res.text = "Unable to find that agency release version";
+        //        }
+        //    }
+        //    else
+        //    {
+        //        res.text = "Unable to find that agency release version";
+        //    }
+
+
+        //    return res;
+            
+        //}
+
+
+        [HttpPost]
+        [Route("api/Releases/{framework}", Name = "GetFrameworkReleaseDetails")]
+        [ResponseType(typeof(string))]
+        public textResponse GetCoreRelease([FromUri()] string framework, [FromBody()] SlackPost sp)
+        {
+            textResponse res = new textResponse();
+            res.attachments = new List<Attachment>();
+
+            int version = -1;
+            if (Int32.TryParse(sp.text, out version))
+            {
+                Framework fw = db.Frameworks.Where(f => f.Name.ToLower() == framework.ToLower()).FirstOrDefault();
+                if (fw != null)
+                {
+                    Release release = db.Releases.Where(r => r.FrameworkKey == fw.FrameworkKey && r.Version == version).FirstOrDefault();
+
+                    if (release != null)
+                    {
+                        res.text = fw.Name + " release version " + version + " contains:";
+
+                        List<ChangelogEntry> changesInRelease = db.ChangelogEntries.Where(ce => ce.ReleaseKey == release.ReleaseKey).ToList();
+
+                        foreach (ChangelogEntry entry in changesInRelease)
+                        {
+                            Attachment newAttachment = new Attachment() { fields = new List<Field>() };
+                            Field newField = new Field() { title = "", value = entry.Description };
+                            newAttachment.fields.Add(newField);
+                            res.attachments.Add(newAttachment);
+                        }
+
+                        if (res.attachments.Count == 0)
+                        {
+                            Attachment newAttachment = new Attachment() { fields = new List<Field>() };
+                            Field newField = new Field() { title = "", value = "No Changes Logged" };
+                            newAttachment.fields.Add(newField);
+                            res.attachments.Add(newAttachment);
+                        }
+                    }
+                    else
+                    {
+                        res.text = "Unable to find that release";
+                    }
+                }
+                else
+                {
+                    res.text = "Unable to find that framework";
+                }
+            }
+            else
+            {
+                res.text = "Unable to find that release version";
+            }
+            return res;
+
         }
     }
 }

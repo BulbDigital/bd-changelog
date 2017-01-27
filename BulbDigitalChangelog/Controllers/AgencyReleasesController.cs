@@ -18,6 +18,7 @@ namespace BulbDigitalChangelog.Controllers
         {
             public string agencyName;
             public string frameworkName;
+            public string agencyUrl;
         }
         private BulbDigitalChangelogContext db = new BulbDigitalChangelogContext();
 
@@ -113,15 +114,15 @@ namespace BulbDigitalChangelog.Controllers
             }
 
             var spArray = sp.text.Split(null);
-            agencyProvision agencyProvision = new agencyProvision() { agencyName = spArray[0], frameworkName = spArray[1] };
+            agencyProvision agencyProvision = new agencyProvision() { agencyUrl = spArray[0], frameworkName = spArray[1] };
 
             string returnString = "";
 
             if (agencyProvision != null)
             {
-                Agency agencyToProvision = db.Agencies.Where(a => a.Name.ToLower() == agencyProvision.agencyName.ToLower()).FirstOrDefault();
+                Agency agencyToProvision = db.Agencies.Where(a => a.Url == agencyProvision.agencyUrl).FirstOrDefault();
                 Framework framework = db.Frameworks.Where(a => a.Name.ToLower() == agencyProvision.frameworkName.ToLower()).FirstOrDefault();
-                if (agencyToProvision != null)
+                if (agencyToProvision != null && framework != null)
                 {
                     AgencyRelease mostRecentAgencyRelease = db.AgencyReleases.Include("Release").Where(a => a.AgencyKey == agencyToProvision.AgencyKey && a.Release.FrameworkKey == framework.FrameworkKey).OrderByDescending(a => a.Release
                     .Version).FirstOrDefault();
@@ -151,14 +152,18 @@ namespace BulbDigitalChangelog.Controllers
                         returnString = "Could not find any releases to provision";
                     }
                     }
-                else
+                else if(agencyToProvision != null)
                 {
-                    returnString = "Unable to match an agency with that name";
+                    returnString = "Unable to match a framework with that name";
+                }
+                else if (framework != null)
+                {
+                    returnString = "Unable to match an agency with that url";
                 }
             }
             else
             {
-                returnString = "You have to enter a framework to build a release for";
+                returnString = "Failed to parse input";
             }
 
             var res = new { text = returnString };

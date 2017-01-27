@@ -12,5 +12,6 @@ namespace BulbDigitalChangelog.Models
         public int AgencyKey { get; set; }
         public string Name { get; set; }
         public int? Rank { get; set; }
+        public string Url { get; set; }
     }
 }

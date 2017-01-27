@@ -12,50 +12,6 @@ using BulbDigitalChangelog.Models;
 
 namespace BulbDigitalChangelog.Controllers
 {
-    public class textResponse
-    {
-        public string text { get; set; }
-        public List<Attachment> attachments { get; set; }
-    }
-
-    public class Attachment
-    {
-        //Required plain-text summary of the attachment
-        public string fallback { get; set; }
-        //#36a64f
-        public string color { get; set; }
-        //Optional text that appears above the attachment block
-        public string pretext { get; set; }
-            //Slack API Documentation
-            public string title { get; set; }
-
-            //https://api.slack.com/
-            public string title_link { get; set; }
-            //Optional text that appears within the attachment
-            public string text { get; set; }
-            public List<Field> fields { get; set; }
-            public string footer { get; set; }
-    }
-
-public class Field
-{
-    public string title;
-    public string value;
-    public bool @short;
-}
-
-    public class SlackPost
-    {
-        public string token { get; set; }
-        public string team_id { get; set; }
-        public string team_domain { get; set; }
-        public string channel_id { get; set; }
-        public string channel_name { get; set; }
-        public string user_id { get; set; }
-        public string user_name { get; set; }
-        public string command { get; set; }
-        public string text { get; set; }
-    }
 
     public class ChangelogEntriesController : ApiController
     {
@@ -175,7 +131,7 @@ public class Field
                     {
                         ChangelogEntry newEntry = new ChangelogEntry()
                         {
-                            CreatedByUser = slackPost.user_id,
+                            CreatedByUser = slackPost.user_name,
                             DateLogged = DateTime.Now,
                             Description = slackPost.text,
                             FrameworkKey = fw.FrameworkKey,
@@ -193,7 +149,7 @@ public class Field
 
                         ChangelogEntry newEntry = new ChangelogEntry()
                         {
-                            CreatedByUser = slackPost.user_id,
+                            CreatedByUser = slackPost.user_name,
                             DateLogged = DateTime.Now,
                             Description = slackPost.text,
                             FrameworkKey = fw.FrameworkKey,
