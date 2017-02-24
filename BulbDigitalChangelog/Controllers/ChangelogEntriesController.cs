@@ -36,12 +36,15 @@ namespace BulbDigitalChangelog.Controllers
             foreach (var group in groups)
             {
                 Attachment newAttachment = new Attachment() { fields = new List<Field>() };
-
-                Field newField = new Field() { title = group.FrameworkName, value = "" };
+                newAttachment.mrkdwn_in = new List<string>();
+                newAttachment.mrkdwn_in.Add("fields");
+                newAttachment.mrkdwn_in.Add("pretext");
+                newAttachment.pretext = "*" + group.FrameworkName + "*";
+                Field newField = new Field() {value = "" };
                 result += "*" + group.FrameworkName + "*\n";
                 foreach(ChangelogEntry changelog in group.Changelogs)
                 {
-                    newField.value += changelog.Description + "\n";
+                    newField.value += "• " + changelog.Description + " - *" + changelog.CreatedByUser + "*\n";
                     result += changelog.Description + "\n";
                 }
 
@@ -140,6 +143,19 @@ namespace BulbDigitalChangelog.Controllers
                         db.ChangelogEntries.Add(newEntry);
                         db.SaveChanges();
                         returnString = "*Added to " + framework + " changelog*: " + slackPost.text;
+
+
+                        var ctl = new SlackWebhookController();
+                        repoPost post = new repoPost()
+                        {
+                            type = "changelog",
+                            fallback = slackPost.user_name + " added to " + framework + " changelog: " + slackPost.text,
+                            message = slackPost.text,
+                            framework = framework,
+                            username = slackPost.user_name
+                        };
+
+                        ctl.PostToSOMRepoActivity(post);
                     }
                     else
                     {
@@ -158,6 +174,19 @@ namespace BulbDigitalChangelog.Controllers
                         db.ChangelogEntries.Add(newEntry);
                         db.SaveChanges();
                         returnString = "*Added to " + framework + " changelog*: " + slackPost.text;
+
+                        var ctl = new SlackWebhookController();
+
+                        repoPost post = new repoPost()
+                        {
+                            type = "changelog",
+                            fallback = slackPost.user_name + " added to " + framework + " changelog: " + slackPost.text,
+                            message = slackPost.text,
+                            framework = framework,
+                            username = slackPost.user_name
+                        };
+
+                        ctl.PostToSOMRepoActivity(post);
                     }
                 }
             }

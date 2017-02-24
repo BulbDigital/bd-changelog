@@ -68,6 +68,18 @@ namespace BulbDigitalChangelog.Controllers
 
                     buildResponse.Changelogs = changesInRelease.Select(c => new ServiceChangelog() { DateLogged = c.DateLogged, ChangeNote = c.Description, Username = c.CreatedByUser }).ToList();
 
+                    var ctl = new SlackWebhookController();
+
+                    repoPost post = new repoPost()
+                    {
+                        type = "pull",
+                        fallback = slackPost.user_name + " has pulled " + fw.Name,
+                        message = "Pulled " + fw.Name,
+                        framework = fw.Name,
+                        username = slackPost.user_name
+                    };
+
+                    ctl.PostToSOMRepoActivity(post);
                     //returnString = "*Built release for " + fw.Name + "*";
                 }
                 else

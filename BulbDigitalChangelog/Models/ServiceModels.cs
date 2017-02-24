@@ -27,6 +27,15 @@ namespace BulbDigitalChangelog
         public List<Attachment> attachments { get; set; }
     }
 
+    public class repoPost
+    {
+        public string framework;
+        public string type;
+        public string username;
+        public string message;
+        public string fallback;
+    }
+
     public class Attachment
     {
         //Required plain-text summary of the attachment
@@ -44,6 +53,7 @@ namespace BulbDigitalChangelog
         public string text { get; set; }
         public List<Field> fields { get; set; }
         public string footer { get; set; }
+        public List<string> mrkdwn_in { get; set; }
     }
 
     public class Field

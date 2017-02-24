@@ -144,6 +144,7 @@
     <Compile Include="Controllers\FrameworksController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ReleasesController.cs" />
+    <Compile Include="Controllers\SlackWebhookController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -253,6 +254,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\ServiceModels\" />
+    <Folder Include="Views\SlackWebhook\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
